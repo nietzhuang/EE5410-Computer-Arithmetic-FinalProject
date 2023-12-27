@@ -3,7 +3,12 @@
 #include <algorithm>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include <math.h> 
+
+#include <chrono>
+
+#include <random>
 
 #include "MachineLearning.h"
 
@@ -15,50 +20,70 @@ vector<float> getIrisy();
 
 int main()
 {
+    //get data
     vector< vector<float> > X = getIrisX();
     vector<float> y = getIrisy();
-    vector<float> test1;
-    test1.push_back(5.0);
-    test1.push_back(3.3);
-    test1.push_back(1.4);
-    test1.push_back(0.2);
 
-    vector<float> test2;
-    test2.push_back(6.0);
-    test2.push_back(2.2);
-    test2.push_back(5.0);
-    test2.push_back(1.5);
-    //printVector(X);
-    //for (int i = 0; i < y.size(); i++){ cout << y[i] << " "; }cout << endl;
+    //random data
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    shuffle(X.begin(), X.end(), std::default_random_engine(seed));
+    shuffle(y.begin(), y.end(), std::default_random_engine(seed)); 
 
+    //set 70 for training, 30 for validation
+    vector<vector<float>> X_train(X.begin(), X.begin() + 70);
+    vector<float> y_train(y.begin(), y.begin() + 70);
+    vector<vector<float>> X_test(X.begin() + 70, X.end());
+    vector<float> y_test(y.begin() + 70, y.end());
+
+    // //set 80 for training, 20 for validation
+    // vector<vector<float>> X_train(X.begin(), X.begin() + 80);
+    // vector<float> y_train(y.begin(), y.begin() + 80);
+    // vector<vector<float>> X_test(X.begin() + 80, X.end());
+    // vector<float> y_test(y.begin() + 80, y.end());
+
+    // //set 90 for training, 10 for validation
+    // vector<vector<float>> X_train(X.begin(), X.begin() + 90);
+    // vector<float> y_train(y.begin(), y.begin() + 90);
+    // vector<vector<float>> X_test(X.begin() + 90, X.end());
+    // vector<float> y_test(y.begin() + 90, y.end());
+
+    // train model learning rate = 0.1, epochs = 14
     perceptron clf(0.1, 14);
-    clf.fit(X, y);
-    clf.printErrors();
-    cout << "Now Predicting: 5.0,3.3,1.4,0.2(CorrectClass=-1,Iris-setosa) -> " << clf.predict(test1) << endl;
-    cout << "Now Predicting: 6.0,2.2,5.0,1.5(CorrectClass=1,Iris-virginica) -> " << clf.predict(test2) << endl;
+    clf.fit(X_train, y_train);
 
-    system("PAUSE");
+    // print error
+    clf.printErrors();
+
+    // validate model
+    int correct_predictions = 0;
+    for (size_t i = 0; i < X_test.size(); i++) {
+        if (clf.predict(X_test[i]) == y_test[i])
+            correct_predictions++;
+    }
+    
+    for (size_t i = 0; i < X_test.size(); i++) {
+        int predicted = clf.predict(X_test[i]);
+        cout <<cout << "Sample: " << i 
+             << " - Actual class: " << y_test[i] 
+             << "Predicted class: " << predicted << endl;
+    }
+    
+    // calculate overall accuracy
+    double accuracy = static_cast<double>(correct_predictions) / X_test.size();
+    cout << "Accuracy: " << accuracy * 100 << "%" << endl;
+
     return 0;
 }
 
 vector<float> getIrisy()
 {
+    ifstream inFile("iris.data");
     vector<float> y;
+    string line;
 
-    ifstream inFile;
-    inFile.open("y.data");
-    string sampleClass;
-    for (int i = 0; i < 100; i++)
-    {
-        inFile >> sampleClass;
-        if (sampleClass == "Iris-setosa")
-        {
-            y.push_back(-1);
-        }
-        else
-        {
-            y.push_back(1);
-        }
+    while (getline(inFile, line)) {
+        string label = line.substr(line.find_last_of(',') + 1);
+        y.push_back(label == "Iris-setosa" ? -1 : 1);
     }
 
     return y;
@@ -66,42 +91,20 @@ vector<float> getIrisy()
 
 vector< vector<float> > getIrisX()
 {
-    ifstream af;
-    ifstream bf;
-    ifstream cf;
-    ifstream df;
-    af.open("a.data");
-    bf.open("b.data");
-    cf.open("c.data");
-    df.open("d.data");
+    ifstream inFile("iris.data");
+    vector<vector<float>> X;
+    string line;
 
-    vector< vector<float> > X;
-
-    for (int i = 0; i < 100; i++)
-    {
-        char scrap;
-        int scrapN;
-        af >> scrapN;
-        bf >> scrapN;
-        cf >> scrapN;
-        df >> scrapN;
-
-        af >> scrap;
-        bf >> scrap;
-        cf >> scrap;
-        df >> scrap;
-        float a, b, c, d;
-        af >> a;
-        bf >> b;
-        cf >> c;
-        df >> d;
-        X.push_back(vector < float > {a, b, c, d});
+    while (getline(inFile, line)) {
+        stringstream ss(line);
+        vector<float> features;
+        string value;
+        for (int i = 0; i < 4; i++) {
+            getline(ss, value, ',');
+            features.push_back(stof(value));
+        }
+        X.push_back(features);
     }
-
-    af.close();
-    bf.close();
-    cf.close();
-    df.close();
 
     return X;
 }
