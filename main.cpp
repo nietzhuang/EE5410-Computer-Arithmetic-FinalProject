@@ -7,18 +7,22 @@
 #include <math.h> 
 
 #include <chrono>
+
 #include <random>
 
-#include "Perceptron.h"
+#include "MachineLearning.h"
 
 using namespace std;
-using namespace Perceptron;
+using namespace MachineLearning;
 
 vector< vector<float> > getIrisX();
 vector<float> getIrisy();
 
 int main()
 {
+    // record start time 
+    auto start = std::chrono::high_resolution_clock::now();
+   
     //get data
     vector< vector<float> > X = getIrisX();
     vector<float> y = getIrisy();
@@ -59,6 +63,9 @@ int main()
         if (clf.predict(X_test[i]) == y_test[i])
             correct_predictions++;
     }
+
+    // record end time
+    auto end = std::chrono::high_resolution_clock::now();
     
     for (size_t i = 0; i < X_test.size(); i++) {
         int predicted = clf.predict(X_test[i]);
@@ -70,6 +77,9 @@ int main()
     // calculate overall accuracy
     double accuracy = static_cast<double>(correct_predictions) / X_test.size();
     cout << "Accuracy: " << accuracy * 100 << "%" << endl;
+
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "Elapsed time: " << elapsed.count() << " seconds." << std::endl;
 
     return 0;
 }
