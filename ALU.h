@@ -18,8 +18,11 @@ public:
         FP16 fp16_weight;
         FP16 fp16_output;
         
-        fp16_input.value = input;
-        fp16_weight.value = weight;
+        m_input = input;
+        m_weight = weight;
+
+        fp16_input.value = m_input;
+        fp16_weight.value = m_weight;
 
         fp16_output.sign = fp16_input.raw.sign * fp16_weight.raw.sign; 
         fp16_output.mantissa = fp16_input.raw.mantissa * fp16_weight.raw.mantissa; 

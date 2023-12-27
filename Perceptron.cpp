@@ -5,10 +5,9 @@
 #include <string>
 #include <math.h>
 
+#include "Perceptron.h"
 
-#include "MachineLearning.h"
-
-namespace MachineLearning 
+namespace Perceptron
 {
     perceptron::perceptron(float eta, int epochs)
     {

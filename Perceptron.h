@@ -5,7 +5,7 @@
 #include <string>
 #include <math.h> 
 
-namespace MachineLearning
+namespace Perceptron
 {
     class perceptron
     {
