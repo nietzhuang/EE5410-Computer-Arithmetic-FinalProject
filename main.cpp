@@ -85,7 +85,7 @@ int main()
 
 vector<float> getIrisy()
 {
-    ifstream inFile("iris.data");
+    ifstream inFile("./Iris/iris.data");
     vector<float> y;
     string line;
 
@@ -99,7 +99,7 @@ vector<float> getIrisy()
 
 vector< vector<float> > getIrisX()
 {
-    ifstream inFile("iris.data");
+    ifstream inFile("./Iris/iris.data");
     vector<vector<float>> X;
     string line;
 
