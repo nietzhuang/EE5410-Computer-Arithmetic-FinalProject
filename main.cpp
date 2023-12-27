@@ -10,10 +10,12 @@
 
 #include <random>
 
-#include "MachineLearning.h"
+//#include "MachineLearning.h"
+#include "Perceptron.h"
 
 using namespace std;
-using namespace MachineLearning;
+//using namespace MachineLearning;
+using namespace Perceptron;
 
 vector< vector<float> > getIrisX();
 vector<float> getIrisy();
