@@ -19,11 +19,14 @@ public:
     float FP16_add(float input, float weight);
     float signed_fix_mul(float input, float weight);
     float signed_fix_add(float input, float weight);
+    float signed_fix_sub(float input, float weight);
+    int float2fix(float n);
 
 private:    
     /*~ALU() {
         m_input = 0;
         m_weight = 0;
     };*/
+};
 
 #endif

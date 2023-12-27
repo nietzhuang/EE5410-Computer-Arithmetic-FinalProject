@@ -5,6 +5,7 @@
 #include <string>
 #include <math.h> 
 
+
 namespace Perceptron
 {
     class perceptron
