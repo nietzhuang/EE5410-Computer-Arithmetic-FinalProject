@@ -6,6 +6,10 @@
 #include <math.h>
 
 #include "Perceptron.h"
+#include "ALU.h"
+
+ALU ALU;
+using namespace std;
 
 namespace Perceptron
 {
@@ -46,7 +50,9 @@ namespace Perceptron
         // MAC
         for (int i = 0; i < X.size(); i++)
         {
-            probabilities += X[i] * m_w[i + 1];
+            //probabilities += X[i] * m_w[i + 1];
+            //probabilities += ALU.FP16_mul(X[i], m_w[i + 1]);
+            probabilities += ALU.FP16_mul(1.1, 1.0);
         }
         return probabilities;
     }

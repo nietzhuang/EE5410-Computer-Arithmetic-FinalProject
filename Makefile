@@ -15,7 +15,7 @@ all : PerceptronTest
 
 PerceptronTest:
 	@echo Compiling program $@
-	$(CC)  $(CFLAGS) -o $@.o Perceptron.cpp main.cpp
+	$(CC)  $(CFLAGS) -o $@.o Perceptron.cpp ALU.cpp main.cpp
 	./PerceptronTest.o
 	
 clean:
