@@ -68,9 +68,9 @@ int main()
     
     for (size_t i = 0; i < X_test.size(); i++) {
         int predicted = clf.predict(X_test[i]);
-        cout <<cout << "Sample: " << i 
+        cout << "Sample: " << i 
              << " - Actual class: " << y_test[i] 
-             << "Predicted class: " << predicted << endl;
+             << "\tPredicted class: " << predicted << endl;
     }
     
     // calculate overall accuracy

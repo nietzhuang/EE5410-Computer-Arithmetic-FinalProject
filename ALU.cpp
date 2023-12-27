@@ -11,23 +11,32 @@ using namespace std;
 
 
 float ALU::FP16_mul(float input, float weight) {
-/*        FP16 fp16_input;
+        typedef union {
+            float value;
+            struct
+            {
+                unsigned int mantissa : 23;
+                unsigned int exponent : 8;     
+                unsigned int sign : 1;             
+            } raw;                                 
+        } FP16;
+
+        FP16 fp16_input;
         FP16 fp16_weight;
         FP16 fp16_output;
 
         fp16_input.value = input;
         fp16_weight.value = weight;
 
-        fp16_output.sign = fp16_input.raw.sign * fp16_weight.raw.sign; 
-        fp16_output.mantissa = fp16_input.raw.mantissa * fp16_weight.raw.mantissa; 
-        fp16_output.exponent = fp16_input.raw.exponent + fp16_weight.raw.exponent; 
-        
-        cout << "Input value: " << fp16_input.value << endl;
-        cout << "Input mantissa: " << fp16_input.raw.mantissa << endl;
+        float sign = fp16_input.raw.sign ^ fp16_weight.raw.sign;
+        float mantissa = (1.0 + fp16_input.raw.mantissa / pow(2, 23)) * (1.0 + fp16_weight.raw.mantissa / pow(2, 23) );
+        float exponent = (fp16_input.raw.exponent) + (fp16_weight.raw.exponent);
+        fp16_output.value = pow(-1, sign) * mantissa * pow(2, exponent - 254);
 
+        cout << sign << "  " << mantissa << " = " << exponent << endl;
+        cout << "Output Value: " << fp16_output.value << endl;
+        
         return fp16_output.value;
-        */
-        //!!
         
     
     }

@@ -6,11 +6,8 @@
 #include <math.h>
 
 #include "Perceptron.h"
-#include "ALU.h"
 
 using namespace std;
-
-ALU alu;
 
 namespace Perceptron
 {
@@ -37,10 +34,10 @@ namespace Perceptron
                 //float update = alu.signed_fix_mul(m_eta, alu.signed_fix_sub(y[j], predict(X[j])));
 
                 // MAC
-                for (int w = 1; w < m_w.size(); w++){ m_w[w] += update * X[j][w - 1]; }
-    //            for (int w = 1; w < m_w.size(); w++) {
-    //                m_w[w] = alu.signed_fix_add(m_w[w], alu.signed_fix_mul(update, X[j][w - 1]));
-    //            }
+                //for (int w = 1; w < m_w.size(); w++){ m_w[w] += update * X[j][w - 1]; }
+                for (int w = 1; w < m_w.size(); w++) {
+                    m_w[w] = alu.signed_fix_add(m_w[w], alu.signed_fix_mul(update, X[j][w - 1]));
+                }
                 m_w[0] = update;
                 // threshold function
                 errors += update != 0 ? 1 : 0;
@@ -57,9 +54,10 @@ namespace Perceptron
         // MAC
         for (int i = 0; i < X.size(); i++)
         {
-            probabilities += X[i] * m_w[i + 1];
-            //probabilities += ALU.FP16_mul(X[i], m_w[i + 1]);
-            //probabilities = alu.signed_fix_add(probabilities, alu.signed_fix_mul(X[i], m_w[i + 1]));
+            //probabilities += X[i] * m_w[i + 1];
+            //probabilities += alu.FP16_mul(X[i], m_w[i + 1]);
+            //probabilities += alu.FP16_mul(1.0, 8);
+            probabilities = alu.signed_fix_add(probabilities, alu.signed_fix_mul(X[i], m_w[i + 1]));
         }
         return probabilities;
     }

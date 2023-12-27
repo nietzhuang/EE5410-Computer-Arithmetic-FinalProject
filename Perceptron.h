@@ -5,6 +5,7 @@
 #include <string>
 #include <math.h> 
 
+#include "ALU.h"
 
 namespace Perceptron
 {
@@ -22,6 +23,7 @@ namespace Perceptron
     private:
         float m_eta;
         int m_epochs;
+        ALU alu;
         std::vector < float > m_w;
         std::vector < float > m_errors;
     };
