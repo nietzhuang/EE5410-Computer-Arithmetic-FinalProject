@@ -47,6 +47,7 @@ public:
     float signed_fix_mul(float input, float weight) {
     //!!
     // Test git branch and pull
+    // Test branch with collaboration
     
     };
 
