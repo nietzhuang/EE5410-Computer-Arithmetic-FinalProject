@@ -3,43 +3,20 @@ CC = g++
 DEBUG = -g3
 PROJNAME = Perceptron
 
-#HEADERPATH = ./.
 SOURCEPATH = ./.
 
-#LOCALDEPSINCLUDES = ./deps
-#AUXINCLUDES = 
-#AUXLIBS = 
 
-#INCLUDES = -I$(LOCALDEPSINCLUDES) -I$(AUXINCLUDES)  
-#LIBS = -L$(AUXLIBS) 
-#LIBS += -L/usr/local/lib/
-#rlunaro: removed optimization for tests: -O3
-CFLAGS = -std=gnu++11 -std=c++11 -Wall -fmessage-length=0 -fPIC $(INCLUDES)
-CFLAGS += $(DEBUG)
-
-HDRS  = $(shell find $(HEADERPATH) $(AUXINCLUDES) $(LOCALDEPSINCLUDES) -name '*.h')
-#HDRS += $(shell find $(HEADERPATH) $(AUXINCLUDES) $(LOCALDEPSINCLUDES) -name '*.h++')
+#CFLAGS = -std=gnu++11 -std=c++11 -Wall -fmessage-length=0 -fPIC $(INCLUDES)
+CFLAGS = -std=gnu++11 -std=c++11 
+#CFLAGS += $(DEBUG)
 SRCS  = $(shell find $(SOURCEPATH) -name '*.cpp')
-#SRCS += $(shell find $(SOURCEPATH) -name '*.c')
-OBJS = $(SRCS:.cpp=.o)
-TXTS = $(wildcard *.txt)
-SCRIPTS = $(wildcard *.sh)
 
-all : PerceptronTest $(PROJNAME).a $(PROJNAME).so
+all : PerceptronTest
 
-$(PROJNAME).a : $(SOURCEPATH)/Perceptron.o
-	@echo Creating static lib $@
-	ar rcs $@ $(SOURCEPATH)/Perceptron.o
-
-$(PROJNAME).so : $(SOURCEPATH)/Perceptron.o
-	@echo Creating dynamic lib $@
-	$(CC) -o $@ $(SOURCEPATH)/MLP.o $(LDFLAGS) $(LFLAGS) 
-
-#PerceptronTest: $(SOURCEPATH)/PerceptronTest.o  $(SOURCEPATH)/Perceptron.o
-PerceptronTest: $(SOURCEPATH)/Perceptron.cpp
+PerceptronTest:
 	@echo Compiling program $@
-	#$(CC)  $^ $(CFLAGS) $(LFLAGS) -o $@
-	$(CC)  $(CFLAGS) -o Perceptron.cpp main.cpp
+	$(CC)  $(CFLAGS) -o $@.o Perceptron.cpp main.cpp
+	./PerceptronTest.o
 	
 clean:
 	@echo Clean

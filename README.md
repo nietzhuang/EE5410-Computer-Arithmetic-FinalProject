@@ -1,4 +1,5 @@
 How to compile: 
 
-  g++ -std=c++11 -o perceptron MachineLearning.cpp main.cpp<br>
-  ./perceptron
+  make all
+  or
+  make PerceptronTest
