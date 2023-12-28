@@ -2,6 +2,7 @@
 CC = g++
 DEBUG = -g3
 PROJNAME = Perceptron
+TASK = problem1
 
 SOURCEPATH = ./.
 
@@ -10,12 +11,13 @@ SOURCEPATH = ./.
 CFLAGS = -std=gnu++11 -std=c++11 
 #CFLAGS += $(DEBUG)
 SRCS  = $(shell find $(SOURCEPATH) -name '*.cpp')
+CPPFLAGS = -DTASK=$(TASK)
 
 all : PerceptronTest
 
 PerceptronTest:
 	@echo Compiling program $@
-	$(CC)  $(CFLAGS) -o $@.o Perceptron.cpp ALU.cpp main.cpp
+	$(CC)  $(CFLAGS) -o $@.o main.cpp $(CPPFLAGS) Perceptron.cpp ALU.cpp 	
 	./PerceptronTest.o
 	
 clean:

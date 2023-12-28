@@ -20,6 +20,8 @@ public:
     float signed_fix_mul(float input, float weight);
     float signed_fix_add(float input, float weight);
     float signed_fix_sub(float input, float weight);
+    int CarryLookaheadAdder(int a, int b);
+    int rippleCarryAdder(int a, int b);
     int float2fix(float n);
 
 private:    
