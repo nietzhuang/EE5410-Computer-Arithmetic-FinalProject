@@ -82,6 +82,23 @@ namespace Perceptron
 #endif
 
         }
+#ifdef PROBLEM3
+        /* 1 delay for full adder, but we need to calculate 8 bit binary adder, so we need 8*1 delay for calculation.
+            In this simulation, we treat overflow detection and sign extension for 2 gate-level delay */
+        int add_latency = (8 + 2) * X.size() // for ripple carry adder
+        /* In ripple carry adder, we only need 5 and/or gates to implement one full adder, and reuse the full adder
+            for whole calculation. Also we need 3 and/or gates to detect overflow.*/
+        int add_gate = (5 + 3) * X.size() // for ripple carry adder
+#elif defined(PROBLEM4)
+        /* 1 delay for calculate p, g. 2 delay for calculate 4-bit lookahead carry generator, however we are tring to 
+            implement 8-bit binary adder, so we need extra two delay to calculate 8 bit result. 1 delay for sum.
+            In this simulation, we treat overflow detection and sign extension for 2 gate-level delay. */
+        int add_latency = (1 + 2*2 + 1 + 2) * X.size() // for carry lookahead adder
+        /* In carry lookahead adder, we need 2*8 and/or gates to generate 8-bit p,g signal. 11 and/or gates for 4-bit 
+            lookahead carry generator. 1*8 and/or gates to generate sum. Also we need 3 and/or gates to detect overflow.*/
+        int add_gate = (35 + 3) * X.size() // for carry lookahead adder
+#else
+#endif
         return probabilities;
     }
 
