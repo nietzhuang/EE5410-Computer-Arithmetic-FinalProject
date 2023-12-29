@@ -11,6 +11,12 @@ typedef union {
     } raw;
 } FP16;
 
+struct Adder
+{
+    int sum;
+    int carry;
+};
+
 class ALU
 {
 public:
@@ -20,10 +26,11 @@ public:
     float signed_fix_mul(float input, float weight);
     float signed_fix_add(float input, float weight);
     float signed_fix_sub(float input, float weight);
-    float Radix4_mul(int input, int weight); 
+    float Radix4_mul(float input, float weight); 
     int CarryLookaheadAdder(int a, int b);
     int rippleCarryAdder(int a, int b);
     int float2fix(float n);
+    Adder FA(int bitA, int bitB, int c); 
 
 private:    
 };
