@@ -72,9 +72,10 @@ float ALU::FP16_mul(float input, float weight) {
         int fixed_weight = float2fix(weight);
 
         // fixed point addition
-#if TASK == problem3
+#ifdef PROBLEM3
         int fixed_result = CarryLookaheadAdder(fixed_input, fixed_weight);
-        // int fixed_result = rippleCarryAdder(fixed_input, fixed_weight);
+#elif defined(PROBLEM4)
+        int fixed_result = rippleCarryAdder(fixed_input, fixed_weight);
 #else
         int fixed_result = fixed_input + fixed_weight;
 #endif
@@ -89,15 +90,58 @@ float ALU::FP16_mul(float input, float weight) {
         int fixed_weight = float2fix(weight);
 
         // fixed point addition
-#if TASK == problem3
+#ifdef PROBLEM3
         int fixed_result = CarryLookaheadAdder(fixed_input, -fixed_weight);
-        // int fixed_result = rippleCarryAdder(fixed_input, -fixed_weight);
+#elif defined(PROBLEM4)
+        int fixed_result = rippleCarryAdder(fixed_input, -fixed_weight);
 #else
         int fixed_result = fixed_input - fixed_weight;
 #endif
 
         // converse back to floating point
         return static_cast<float>(fixed_result) / (1 << FIXED_BIT);
+    };
+
+    float ALU::Radix4_mul(int input, int weight) {
+        int bitB[8];
+        int _2bitB;
+        int add;
+        int product = 0;
+        
+        for(int i = 0; i < 8; i++) {
+            bitB[i] = (weight >> (i+1)) & 0x0001;
+        }
+    
+        for(int i = 0; i < 8; i = i + 2) {
+            _2bitB = bitB[i+1] * 2 + bitB[i];
+        
+            add = input << i;
+#ifdef PROBLEM3
+            if(_2bitB == 0)
+                product = CarryLookaheadAdder(product, 0);
+            else if(_2bitB == 1)
+                product = CarryLookaheadAdder(product, add);
+            else if(_2bitB == 2)
+                product = CarryLookaheadAdder(product, (add << 1));
+            else if(_2bitB == 3)
+                product = CarryLookaheadAdder(product, (add << 1 + add));                       
+
+#elif defined(PROBLEM4)
+            if(_2bitB == 0)
+                product = rippleCarryAdder(product, 0);
+            else if(_2bitB == 1)
+                product = rippleCarryAdder(product, add);
+            else if(_2bitB == 2)
+                product = rippleCarryAdder(product, (add << 1));
+            else if(_2bitB == 3)
+                product = rippleCarryAdder(product, (add << 1 + add));
+#endif
+        }
+
+        cout << "Test..." << product << endl;
+
+    
+    
     };
 
     int ALU::CarryLookaheadAdder(int a, int b){

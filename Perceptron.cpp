@@ -31,24 +31,26 @@ namespace Perceptron
             {
 
                 // update weight value
-#if TASK == problem1
+#ifdef PROBLEM1
                 // Using Floating-point 16
                 float update = alu.FP16_mul(m_eta, alu.FP16_add(y[j], (-1 * predict(X[j]))));
                 for (int w = 1; w < m_w.size(); w++) {
                     m_w[w] = alu.FP16_add(m_w[w], alu.FP16_mul(update, X[j][w - 1]));
                 }
-#elif TASK == problem2
+#elif defined(PROBLEM2)
                 // Using Fixed-point
                 float update = alu.signed_fix_mul(m_eta, alu.signed_fix_sub(y[j], predict(X[j])));
                 for (int w = 1; w < m_w.size(); w++) {
                     m_w[w] = alu.signed_fix_add(m_w[w], alu.signed_fix_mul(update, X[j][w - 1]));
                 }
-#elif TASK == problem3
-
+#elif defined(PROBLEM3)
+                // Test
+                float update = alu.Radix4_mul(1.1, 1.0);
 #else
                 float update = m_eta * (y[j] - predict(X[j]));
                 // MAC
                 for (int w = 1; w < m_w.size(); w++){ m_w[w] += update * X[j][w - 1]; }
+                cout << "Doing original Code" << endl;
 #endif
 
                 m_w[0] = update;
@@ -67,13 +69,13 @@ namespace Perceptron
         // MAC
         for (int i = 0; i < X.size(); i++)
         {
-#if TASK == problem1
+#ifdef PROBLEM1
             // Using Floating-point 16
             probabilities = alu.FP16_add(probabilities, alu.FP16_mul(X[i], m_w[i + 1]));
-#elif TASK == problem2
+#elif defined(PROBLEM2)
             // Using Fixed-point
             probabilities = alu.signed_fix_add(probabilities, alu.signed_fix_mul(X[i], m_w[i + 1]));
-#elif TASK == problem3
+#elif defined(PROBLEM3)
 
 #else
             probabilities += X[i] * m_w[i + 1];

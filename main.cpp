@@ -1,5 +1,3 @@
-//#define TASK problem3
-
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -21,6 +19,19 @@ vector<float> getIrisy();
 
 int main()
 {
+#ifdef PROBLEM1
+    cout << "\n======== Problem 1 ========\n"  << endl;
+#elif defined(PROBLEM2)
+    cout << "\n======== Problem 2 ========\n"  << endl;
+#elif defined(PROBLEM3)
+    cout << "\n======== Problem 3 ========\n"  << endl;
+#elif defined(PROBLEM4)
+    cout << "\n======== Problem 4 ========\n"  << endl;
+#else
+    cout << "\n======== Origin ========\n"  << endl;
+#endif
+
+
     // record start time 
     auto start = std::chrono::high_resolution_clock::now();
    

@@ -20,15 +20,12 @@ public:
     float signed_fix_mul(float input, float weight);
     float signed_fix_add(float input, float weight);
     float signed_fix_sub(float input, float weight);
+    float Radix4_mul(int input, int weight); 
     int CarryLookaheadAdder(int a, int b);
     int rippleCarryAdder(int a, int b);
     int float2fix(float n);
 
 private:    
-    /*~ALU() {
-        m_input = 0;
-        m_weight = 0;
-    };*/
 };
 
 #endif
