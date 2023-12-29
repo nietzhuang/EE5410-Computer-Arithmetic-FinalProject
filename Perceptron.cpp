@@ -43,9 +43,6 @@ namespace Perceptron
                 for (int w = 1; w < m_w.size(); w++) {
                     m_w[w] = alu.signed_fix_add(m_w[w], alu.signed_fix_mul(update, X[j][w - 1]));
                 }
-#elif defined(PROBLEM3)
-                // Test
-                float update = alu.Radix4_mul(1.1, 1.0);
 #else
                 float update = m_eta * (y[j] - predict(X[j]));
                 // MAC
@@ -76,7 +73,11 @@ namespace Perceptron
             // Using Fixed-point
             probabilities = alu.signed_fix_add(probabilities, alu.signed_fix_mul(X[i], m_w[i + 1]));
 #elif defined(PROBLEM3)
-
+            // Using Fixed-point
+            probabilities = alu.signed_fix_add(probabilities, alu.signed_fix_mul(X[i], m_w[i + 1]));
+#elif defined(PROBLEM4)
+            // Using Fixed-point
+            probabilities = alu.signed_fix_add(probabilities, alu.signed_fix_mul(X[i], m_w[i + 1]));
 #else
             probabilities += X[i] * m_w[i + 1];
 #endif
