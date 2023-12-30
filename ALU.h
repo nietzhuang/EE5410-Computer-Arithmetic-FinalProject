@@ -29,6 +29,7 @@ public:
     float Radix4_mul(float input, float weight); 
     int CarryLookaheadAdder(int a, int b);
     int rippleCarryAdder(int a, int b);
+    int CLA_CPA(int a, int b);
     int float2fix(float n);
     Adder FA(int bitA, int bitB, int c); 
 
