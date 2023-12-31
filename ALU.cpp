@@ -5,12 +5,13 @@
 
 #include "ALU.h"
 
+#define BIT_NUM 8
 #define FIXED_BIT 4
 
 using namespace std;
 
 
-float ALU::FP16_mul(float input, float weight) {
+    float ALU::FP16_mul(float input, float weight) {
         FP16 fp16_input;
         FP16 fp16_weight;
         FP16 fp16_output;
@@ -103,7 +104,7 @@ float ALU::FP16_mul(float input, float weight) {
         int bitB[8];
         int _2bitB;
         int add;
-        int sign_flag_in, sign_flag_w = 0;
+        bool sign_flag_in, sign_flag_w = 0;
         int partprod[4] = {0};
         int partprod_tree[2] = {0};
         int product = 0;
@@ -111,7 +112,7 @@ float ALU::FP16_mul(float input, float weight) {
         int fixed_input;
         int fixed_weight;
         
-        // Sign detection 
+        // Format conversion and sign detection 
         if(std::signbit(input)) {
             fixed_input = float2fix(-input);
             sign_flag_in = 1;
@@ -131,11 +132,11 @@ float ALU::FP16_mul(float input, float weight) {
             bitB[i] = (fixed_weight >> i) & 0x0001;
         }
     
-        for(int i = 0; i < 8; i = i + 2) {
+        // precompute 0, a, 2a, and 3a
+        for(int i = 0; i < BIT_NUM; i = i + 2) {
             _2bitB = bitB[i+1] * 2 + bitB[i];
 
             add = fixed_input << i;
-#ifdef PROBLEM3
             if(_2bitB == 0)
                 partprod[i/2] = 0;
             else if(_2bitB == 1)
@@ -145,8 +146,6 @@ float ALU::FP16_mul(float input, float weight) {
             else if(_2bitB == 3)
                 partprod[i/2] = (add << 1) + add;
         }
-//        for(int i=0; i < 4; i++)
-//            cout << "Test  " << i << ": " << partprod[i] << endl;
         
         // Wallace tree at the 1st level.
         res_obj[0] = FA((partprod[0] >> 2) & 0x0001, (partprod[1] >> 2) & 0x0001, 0);  
@@ -173,11 +172,6 @@ float ALU::FP16_mul(float input, float weight) {
                         + (res_obj[6].carry << 9) + (res_obj[7].carry << 10)
                         + (res_obj[8].carry << 11) + (res_obj[9].carry << 12);
 
-           
-            //cout << "t  " << FA(1, 1, 0).carry << endl;
-            //cout << "1-level  " << partprod_tree[0] << "    " << partprod_tree[1] << endl;
-
-
         // Wallace tree at the 2nd level.
         res_obj[0] = FA((partprod_tree[0] >> 3) & 0x0001, (partprod_tree[1] >> 3) & 0x0001, 0);
         res_obj[1] = FA((partprod_tree[0] >> 4) & 0x0001, (partprod_tree[1] >> 4) & 0x0001, 0);
@@ -203,7 +197,6 @@ float ALU::FP16_mul(float input, float weight) {
                         + (res_obj[6].carry << 10) + (res_obj[7].carry << 11) 
                         + (res_obj[8].carry << 12) + (res_obj[9].carry << 13); 
 
-            //cout << "2-level  " << partprod_tree[0] << "    " << partprod_tree[1] << endl;
             
         // 14-bit CPA using carry-lookahead adder
         int lsb8[2] = {(partprod_tree[0] & 0x00FF), (partprod_tree[1] & 0x00FF)};
@@ -211,50 +204,114 @@ float ALU::FP16_mul(float input, float weight) {
         int lsb8_sum;
         int msb8_sum;
 
-        cout << "test msb... " << "   " << msb8[1] << endl;
-
         lsb8_sum = CLA_CPA(lsb8[0], lsb8[1]);
         msb8_sum = CLA_CPA(msb8[0], msb8[1]);
         product = (msb8_sum << 8) + lsb8_sum;
 
-//        cout << "MSB SUM: " << msb8_sum << "  LSB SUM: " << lsb8_sum << endl; 
-//        cout << "Product " << product << endl;
-
         // Sign dectection and sign extension
         if(sign_flag_in ^ sign_flag_w)
-        //if((product & 0x00001000) || (product & 0x00002000))
-        //if(product & 0x00002000)
-            product = ~product;        
-            //product = ~product;
-
+            product = ~product + 1;        
 
 
         return static_cast<float>(product) / (1 << 8);
+    };
 
+    float ALU::LowCostMul(float input, float weight) {
+        Adder res[16];
 
-
-
+        bool sign_flag_in, sign_flag_w = 0;
+        int partprod[BIT_NUM] = {0};
         
+        // Format conversion
+        int fixed_input;
+        int fixed_weight;
 
+        // Format conversion and sign detection 
+        if(std::signbit(input)) {
+            fixed_input = float2fix(-input);
+            sign_flag_in = 1;
+        }
+        else 
+            fixed_input = float2fix(input);
 
+        if(std::signbit(weight)) {
+            fixed_weight = float2fix(-weight);
+            sign_flag_w = 1;
+        }
+        else 
+            fixed_weight = float2fix(weight);
 
+        // Obtain partial product using an AND gate
+        for(int i = 0; i < BIT_NUM; i++) {
+            if (fixed_weight & (1 << i)) {
+                for(int j = 0; j < BIT_NUM; j++) {  // use only one AND gate to compute separatelly
+                    partprod[i] += (fixed_input & (1 << j));
+                }
+            }
+            else
+                partprod[i] = 0;
 
+            partprod[i] = partprod[i] << i;
+        }
 
-#elif defined(PROBLEM4)
-            /*if(_2bitB == 0)
-                ;
-                //product = rippleCarryAdder(product, 0);
-            else if(_2bitB == 1)
-                product = rippleCarryAdder(product, add);
-            else if(_2bitB == 2)
-                product = rippleCarryAdder(product, (add << 1));
-            else if(_2bitB == 3)
-                product = rippleCarryAdder(product, (add << 1) + add);  // 3*input can be precomputed.
-                                                                        // */
-#endif
-               
+        // Compute the additions using a ripple carry adder by one FA
+        // Compute the 1st level additions among the partial product 
+        for(int i = 0; i < BIT_NUM/2; i++) {
+            for(int j = 0; j < 16; j++) {  // Shift 16-bit since the final product is 16 bits
+                if (j == 0) {
+                    res[j] = FA((partprod[2*i] >> j) & 0x0001, (partprod[2*i+1] >> j) & 0x0001, 0);
+                }
+                else
+                    res[j] = FA((partprod[2*i] >> j) & 0x0001, (partprod[2*i+1] >> j) & 0x0001 , res[j-1].carry);
+            }            
 
-        return static_cast<float>(product) / (1 << 8); 
+            partprod[i] = 0;
+            for(int j = 0; j < 16; j++) {
+                partprod[i] += (res[j].sum << j);
+            }
+        }
+
+        // Compute the 2nd level additions among the partial products
+        for(int i = 0; i < BIT_NUM/4; i++) {
+            //for(int j = 0; j < BIT_NUM; j++) {
+            for(int j = 0; j < 16; j++) {
+                if (j == 0) {
+                    res[j] = FA((partprod[2*i] >> j) & 0x0001, (partprod[2*i+1] >> j) & 0x0001, 0);
+                }
+                else
+                    res[j] = FA((partprod[2*i] >> j) & 0x0001, (partprod[2*i+1] >> j) & 0x0001 , res[j-1].carry);
+            }            
+
+            partprod[i] = 0;
+            //for(int j = 0; j < BIT_NUM; j++) {
+            for(int j = 0; j < 16; j++) {
+                partprod[i] += (res[j].sum << j);
+            }
+        }
+
+        // Compute the 3rd level additions among the partial products
+        for(int i = 0; i < BIT_NUM/8; i++) {
+            //for(int j = 0; j < BIT_NUM; j++) {
+            for(int j = 0; j < 16; j++) {
+                if (j == 0) {
+                    res[j] = FA((partprod[2*i] >> j) & 0x0001, (partprod[2*i+1] >> j) & 0x0001, 0);
+                }
+                else
+                    res[j] = FA((partprod[2*i] >> j) & 0x0001, (partprod[2*i+1] >> j) & 0x0001 , res[j-1].carry);
+            }            
+
+            partprod[i] = 0;
+            for(int j = 0; j < 16; j++) {
+                partprod[i] += (res[j].sum << j);
+            }
+        }
+
+        // Sign dectection and sign extension
+        if(sign_flag_in ^ sign_flag_w)
+            partprod[0] = ~partprod[0] + 1;       
+           
+        
+        return static_cast<float>(partprod[0]) / (1 << 8);
     };
 
     int ALU::CarryLookaheadAdder(int a, int b){
@@ -411,8 +468,8 @@ int ALU::float2fix(float n)
         Adder result;        
     
         int sum = c ^ (bitA ^ bitB);
-        //int carry = bitA & bitB + (c & (bitA ^ bitB));
-        int carry = (bitA & bitB) + (bitB & c) + (bitA & c);
+        int carry = bitA & bitB + (c & (bitA ^ bitB));
+        //int carry = (bitA & bitB) + (bitB & c) + (bitA & c);
                      
         result.sum = sum;
         result.carry = carry;        

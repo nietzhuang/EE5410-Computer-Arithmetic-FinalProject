@@ -12,7 +12,6 @@ using namespace std;
 namespace Perceptron
 {
     perceptron::perceptron(float eta, int epochs)
-//    perceptron::perceptron(float eta, int epochs): alu(0.0f, 0.0f)
     {
         m_epochs = epochs;
         m_eta = eta;
@@ -73,14 +72,10 @@ namespace Perceptron
             probabilities = alu.signed_fix_add(probabilities, alu.signed_fix_mul(X[i], m_w[i + 1]));
 #elif defined(PROBLEM3)
             // Using Fixed-point
-            //probabilities = alu.signed_fix_add(probabilities, alu.signed_fix_mul(X[i], m_w[i + 1]));
             probabilities = alu.signed_fix_add(probabilities, alu.Radix4_mul(X[i], m_w[i + 1])); 
-            //probabilities = alu.FP16_add(probabilities, alu.FP16_mul(X[i], m_w[i + 1]));
-            cout << "  "<< endl;
-            //alu.Radix4_mul(6.3, -6.0);
 #elif defined(PROBLEM4)
             // Using Fixed-point
-            probabilities = alu.signed_fix_add(probabilities, alu.signed_fix_mul(X[i], m_w[i + 1]));
+            probabilities = alu.signed_fix_add(probabilities, alu.LowCostMul(X[i], m_w[i + 1]));
 #else
             probabilities += X[i] * m_w[i + 1];
 #endif
