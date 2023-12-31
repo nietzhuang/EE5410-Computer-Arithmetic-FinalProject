@@ -144,11 +144,12 @@ using namespace std;
             else if(_2bitB == 2)
                 partprod[i/2] = add << 1;
             else if(_2bitB == 3)
-                partprod[i/2] = (add << 1) + add;
+                //partprod[i/2] = (add << 1) + add;
+                partprod[i/2] = signed_fix_add((add << 1), add);
         }
         
         // Wallace tree at the 1st level.
-        res_obj[0] = FA((partprod[0] >> 2) & 0x0001, (partprod[1] >> 2) & 0x0001, 0);  
+        res_obj[0] = FA((partprod[0] >> 2) & 0x0001, (partprod[1] >> 2) & 0x0001, 0); 
         res_obj[1] = FA((partprod[0] >> 3) & 0x0001, (partprod[1] >> 3) & 0x0001, 0);  
         res_obj[2] = FA((partprod[0] >> 4) & 0x0001, (partprod[1] >> 4) & 0x0001, (partprod[2] >> 4) & 0x0001);  
         res_obj[3] = FA((partprod[0] >> 5) & 0x0001, (partprod[1] >> 5) & 0x0001, (partprod[2] >> 5) & 0x0001);  
