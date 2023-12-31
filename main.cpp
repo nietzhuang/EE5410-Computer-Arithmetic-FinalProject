@@ -17,6 +17,8 @@ using namespace Perceptron;
 vector< vector<float> > getIrisX();
 vector<float> getIrisy();
 
+#define Training_data 60
+
 int main()
 {
 #ifdef PROBLEM1
@@ -45,22 +47,10 @@ int main()
     shuffle(y.begin(), y.end(), std::default_random_engine(seed)); 
 
     //set 70 for training, 30 for validation
-    vector<vector<float>> X_train(X.begin(), X.begin() + 70);
-    vector<float> y_train(y.begin(), y.begin() + 70);
-    vector<vector<float>> X_test(X.begin() + 70, X.end());
-    vector<float> y_test(y.begin() + 70, y.end());
-
-    // //set 80 for training, 20 for validation
-    // vector<vector<float>> X_train(X.begin(), X.begin() + 80);
-    // vector<float> y_train(y.begin(), y.begin() + 80);
-    // vector<vector<float>> X_test(X.begin() + 80, X.end());
-    // vector<float> y_test(y.begin() + 80, y.end());
-
-    // //set 90 for training, 10 for validation
-    // vector<vector<float>> X_train(X.begin(), X.begin() + 90);
-    // vector<float> y_train(y.begin(), y.begin() + 90);
-    // vector<vector<float>> X_test(X.begin() + 90, X.end());
-    // vector<float> y_test(y.begin() + 90, y.end());
+    vector<vector<float>> X_train(X.begin(), X.begin() + Training_data);
+    vector<float> y_train(y.begin(), y.begin() + Training_data);
+    vector<vector<float>> X_test(X.begin() + Training_data, X.end());
+    vector<float> y_test(y.begin() + Training_data, y.end());
 
     // train model learning rate = 0.1, epochs = 14
     perceptron clf(0.1, 14);
