@@ -62,6 +62,11 @@ namespace Perceptron
         // Sum(Vector of weights * Input vector) + bias
         float probabilities = m_w[0];
         // MAC
+#ifdef PROBLEM3        
+        float prob_tmp_0 = alu.signed_fix_add(alu.Radix4_mul(X[0], m_w[1]), alu.Radix4_mul(X[1], m_w[2]));
+        float prob_tmp_1 = alu.signed_fix_add(alu.Radix4_mul(X[2], m_w[3]), alu.Radix4_mul(X[3], m_w[4]));
+        probabilities = alu.signed_fix_add(prob_tmp_0,  prob_tmp_1);
+#endif
         for (int i = 0; i < X.size(); i++)
         {
 #ifdef PROBLEM1
@@ -72,7 +77,8 @@ namespace Perceptron
             probabilities = alu.signed_fix_add(probabilities, alu.signed_fix_mul(X[i], m_w[i + 1]));
 #elif defined(PROBLEM3)
             // Using Fixed-point
-            probabilities = alu.signed_fix_add(probabilities, alu.Radix4_mul(X[i], m_w[i + 1])); 
+            break;
+            //probabilities = alu.signed_fix_add(probabilities, alu.Radix4_mul(X[i], m_w[i + 1])); 
 #elif defined(PROBLEM4)
             // Using Fixed-point
             probabilities = alu.signed_fix_add(probabilities, alu.LowCostMul(X[i], m_w[i + 1]));
